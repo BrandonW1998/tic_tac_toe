@@ -54,14 +54,22 @@ public class DisplayGame extends JFrame{
 				button.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						// If empty space chosen by player
 						if (((JButton) e.getSource()).getText().equals("")) {
+							// Set chosen space to player's mark
 							button.setText(currPlayer);
+							// Check for a winner
 							hasWinner();
+							
+							// If winner was found, reset
+							// Else, continue to next turn
 							if (hasWinner) {
-								// TODO Call Reset Game
+								resetGame();
 							}
-							turnCount++;
-							playerToggle();
+							else {
+								turnCount++;
+								playerToggle();
+							}
 						}
 						
 					}
@@ -89,67 +97,38 @@ public class DisplayGame extends JFrame{
 	// Else return to game
 	private void hasWinner() {
 		
-		// Left Column Win
-		if (	gameBoard[0][0].getText().contentEquals(currPlayer) &&
-				gameBoard[1][0].getText().contentEquals(currPlayer) &&
-				gameBoard[2][0].getText().contentEquals(currPlayer))
-		{
-			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+		// Row Win
+		for (int i = 0; i < boardRow; i++) {
+			if (gameBoard[i][0].getText().contentEquals(currPlayer) &&
+				gameBoard[i][1].getText().contentEquals(currPlayer) &&
+				gameBoard[i][2].getText().contentEquals(currPlayer))
+			{
+				hasWinner = true;
+				JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+				return;
+			}
 		}
 		
-		// Middle Column Win
-		else if(gameBoard[0][1].getText().contentEquals(currPlayer) &&
-				gameBoard[1][1].getText().contentEquals(currPlayer) &&
-				gameBoard[2][1].getText().contentEquals(currPlayer))
-		{
-			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
-		}
-		
-		// Right Column Win
-		else if(gameBoard[0][2].getText().contentEquals(currPlayer) &&
-				gameBoard[1][2].getText().contentEquals(currPlayer) &&
-				gameBoard[2][2].getText().contentEquals(currPlayer))
-		{
-			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
-		}
-		
-		// Top Row Win
-		else if(gameBoard[0][0].getText().contentEquals(currPlayer) &&
-				gameBoard[0][1].getText().contentEquals(currPlayer) &&
-				gameBoard[0][2].getText().contentEquals(currPlayer))
-		{
-			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
-		}
-		
-		// Middle Row Win
-		else if(gameBoard[1][0].getText().contentEquals(currPlayer) &&
-				gameBoard[1][1].getText().contentEquals(currPlayer) &&
-				gameBoard[1][2].getText().contentEquals(currPlayer))
-		{
-			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
-		}
-		
-		// Bottom Row Win
-		else if(gameBoard[2][0].getText().contentEquals(currPlayer) &&
-				gameBoard[2][1].getText().contentEquals(currPlayer) &&
-				gameBoard[2][2].getText().contentEquals(currPlayer))
-		{
-			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+		// Collumn Win
+		for (int j = 0; j < boardCol; j++) {
+			if (gameBoard[0][j].getText().contentEquals(currPlayer) &&
+				gameBoard[1][j].getText().contentEquals(currPlayer) &&
+				gameBoard[2][j].getText().contentEquals(currPlayer))
+			{
+				hasWinner = true;
+				JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+				return;
+			}
 		}
 		
 		// Diagonal Top-Left Win
-		else if(gameBoard[0][0].getText().contentEquals(currPlayer) &&
-				gameBoard[1][1].getText().contentEquals(currPlayer) &&
-				gameBoard[2][2].getText().contentEquals(currPlayer))
+		if(	gameBoard[0][0].getText().contentEquals(currPlayer) &&
+			gameBoard[1][1].getText().contentEquals(currPlayer) &&
+			gameBoard[2][2].getText().contentEquals(currPlayer))
 		{
 			hasWinner = true;
 			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+			return;
 		}
 		
 		// Diagonal Top-Right Win
@@ -159,12 +138,27 @@ public class DisplayGame extends JFrame{
 		{
 			hasWinner = true;
 			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+			return;
 		}
 		
 		// Tie Game
 		else if (turnCount == (boardRow * boardCol)) {
 			hasWinner = true;
 			JOptionPane.showMessageDialog(this, "It's a tie game!\n\nNew Game?");
+			return;
+		}
+	}
+	
+	// Resets variables to default and clears board
+	private void resetGame() {
+		currPlayer = "X";
+		hasWinner = false;
+		turnCount = 1;
+		
+		for(int i = 0; i < boardRow; i++) {
+			for(int j = 0; j < boardCol; j++) {
+				gameBoard[i][j].setText("");
+			}
 		}
 	}
 
