@@ -8,11 +8,17 @@ public class DisplayGame extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private Container pane;	// Contains board
 	private JButton[][] gameBoard;	// 2D Array of buttons
+	private Integer clockVal; // Value displayed on clock
+	private Timer timer; // Tracks time for clock
+	private JLabel turnLabel; // Displays player turn
+	private JLabel clockLabel;	// Displays label of clock
+	private JLabel clock; // Displays clock
 	private String currPlayer;	// Tracks current player
 	private int turnCount;	// Tracks turns
 	private boolean hasWinner;	// Flag set when winner found
 	private static final int boardRow = 3;	// Board size
 	private static final int boardCol = 3;	// Board size
+	private static final int initClockVal = 5;
 	
 	// Constructs board, frame, and variables
 	public DisplayGame() {
@@ -33,6 +39,7 @@ public class DisplayGame extends JFrame{
 		// Initialize game variables
 		gameBoard = new JButton[boardRow][boardCol];
 		currPlayer = "X";
+		clockVal = initClockVal;
 		turnCount = 1;
 		hasWinner = false;
 		
@@ -43,7 +50,26 @@ public class DisplayGame extends JFrame{
 	
 	// Initialze board, add to pane
 	private void initBoard() {
-		
+		// Initialize timer on 1000ms interval
+		timer = new Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Updates current time
+				clockVal--;
+				// Else Update clock with new time
+				clock.setText(clockVal.toString());
+				pane.remove(clock);
+				pane.add(clock);
+				// If timer hits 0, end game and stop timer
+				if (clockVal == 0) {
+					playerToggle();
+					hasWinner = true;
+					timer.stop();
+					JOptionPane.showMessageDialog(pane, "The timer has run out!\n\nNew Game?");
+					resetGame();
+				}
+			}
+		});
 		// Initialize buttons
 		for (int i = 0; i < boardRow; i++) {
 			for(int j = 0; j < boardCol; j++) {
@@ -69,6 +95,11 @@ public class DisplayGame extends JFrame{
 							else {
 								turnCount++;
 								playerToggle();
+								clockVal = initClockVal + 1;
+								turnLabel.setText(currPlayer + "'s turn");
+								pane.remove(turnLabel);
+								pane.add(turnLabel, 9);
+								
 							}
 						}
 						
@@ -79,6 +110,21 @@ public class DisplayGame extends JFrame{
 				pane.add(button);
 			}
 		}
+		
+		// Initialize turn tracker
+		turnLabel = new JLabel(currPlayer + "'s turn");
+		turnLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 50));
+		pane.add(turnLabel);
+		
+		// Initialize timer
+		clockLabel = new JLabel("Time:");
+		clockLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 70));
+		clock = new JLabel(clockVal.toString());
+		clock.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 100));
+		
+		timer.start();
+		pane.add(clockLabel);
+		pane.add(clock);
 	}
 	
 	// Change players
@@ -103,8 +149,9 @@ public class DisplayGame extends JFrame{
 				gameBoard[i][1].getText().contentEquals(currPlayer) &&
 				gameBoard[i][2].getText().contentEquals(currPlayer))
 			{
+				timer.stop();
 				hasWinner = true;
-				JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+				JOptionPane.showMessageDialog(pane, "Player " + currPlayer + " Wins!\n\nNew Game?");
 				return;
 			}
 		}
@@ -115,8 +162,9 @@ public class DisplayGame extends JFrame{
 				gameBoard[1][j].getText().contentEquals(currPlayer) &&
 				gameBoard[2][j].getText().contentEquals(currPlayer))
 			{
+				timer.stop();
 				hasWinner = true;
-				JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+				JOptionPane.showMessageDialog(pane, "Player " + currPlayer + " Wins!\n\nNew Game?");
 				return;
 			}
 		}
@@ -126,8 +174,9 @@ public class DisplayGame extends JFrame{
 			gameBoard[1][1].getText().contentEquals(currPlayer) &&
 			gameBoard[2][2].getText().contentEquals(currPlayer))
 		{
+			timer.stop();
 			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+			JOptionPane.showMessageDialog(pane, "Player " + currPlayer + " Wins!\n\nNew Game?");
 			return;
 		}
 		
@@ -136,15 +185,17 @@ public class DisplayGame extends JFrame{
 				gameBoard[1][1].getText().contentEquals(currPlayer) &&
 				gameBoard[2][0].getText().contentEquals(currPlayer))
 		{
+			timer.stop();
 			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "Player " + currPlayer + " Wins!\n\nNew Game?");
+			JOptionPane.showMessageDialog(pane, "Player " + currPlayer + " Wins!\n\nNew Game?");
 			return;
 		}
 		
 		// Tie Game
 		else if (turnCount == (boardRow * boardCol)) {
+			timer.stop();
 			hasWinner = true;
-			JOptionPane.showMessageDialog(this, "It's a tie game!\n\nNew Game?");
+			JOptionPane.showMessageDialog(pane, "It's a tie game!\n\nNew Game?");
 			return;
 		}
 	}
@@ -154,6 +205,11 @@ public class DisplayGame extends JFrame{
 		currPlayer = "X";
 		hasWinner = false;
 		turnCount = 1;
+		clockVal = initClockVal + 1;
+		turnLabel.setText(currPlayer + "'s turn");
+		
+		timer.stop();
+		timer.start();
 		
 		for(int i = 0; i < boardRow; i++) {
 			for(int j = 0; j < boardCol; j++) {
